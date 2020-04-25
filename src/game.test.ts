@@ -1,4 +1,4 @@
-import { createGame } from "./game";
+import createGame from "./game";
 
 describe("game", () => {
   describe("basics utils", () => {
