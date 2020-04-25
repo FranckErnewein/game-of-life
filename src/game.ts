@@ -3,12 +3,11 @@ export interface CellInterface {
   y: number;
 }
 
-type Column = (CellInterface | undefined)[];
-type Matrix = Column[];
+type Matrix = { [coordinates: string]: CellInterface };
 type Coordinate = [number, number];
 
 export default function createGame() {
-  const matrix: Matrix = [];
+  const matrix: Matrix = {};
   const aroundOffset: Coordinate[] = [
     [-1, -1],
     [-1, 0],
@@ -21,25 +20,17 @@ export default function createGame() {
   ];
 
   function get(x: number, y: number): CellInterface | undefined {
-    if (!matrix[x]) {
-      return undefined;
-    }
-    return matrix[x][y];
+    return matrix[x + ":" + y];
   }
 
   function set(x: number, y: number): CellInterface {
     const cell: CellInterface = { x, y };
-    if (!matrix[x]) {
-      matrix[x] = [];
-    }
-    matrix[x][y] = cell;
+    matrix[x + ":" + y] = cell;
     return cell;
   }
 
   function unset(x: number, y: number) {
-    if (matrix[x] && matrix[x][y]) {
-      matrix[x][y] = undefined;
-    }
+    delete matrix[x + ":" + y];
   }
 
   function getAround(x: number, y: number): (CellInterface | undefined)[] {
@@ -49,41 +40,30 @@ export default function createGame() {
   }
 
   function getAllCells(): CellInterface[] {
-    const all: CellInterface[] = [];
-    matrix.forEach((column: Column) => {
-      if (column) {
-        column.forEach((cell) => {
-          if (cell) all.push(cell);
-        });
-      }
+    return Object.keys(matrix).map((key) => {
+      return matrix[key];
     });
-    return all;
   }
 
   function tick(): void {
     const shouldPopAt: Coordinate[] = [];
     const shouldDie = [] as CellInterface[];
-    matrix.forEach((column, x) => {
-      if (column) {
-        column.forEach((cell, y) => {
-          if (cell) {
-            const alivesCells = getAround(x, y).filter((c) => !!c);
-            const deadCoordinates = aroundOffset
-              .map(([offsetX, offsetY]) => [x + offsetX, y + offsetY])
-              .filter(([xo, yo]) => !get(xo, yo));
+    getAllCells().forEach((cell) => {
+      const { x, y } = cell;
+      const alivesCells = getAround(x, y).filter((c) => !!c);
+      const deadCoordinates = aroundOffset
+        .map(([offsetX, offsetY]) => [x + offsetX, y + offsetY])
+        .filter(([xo, yo]) => !get(xo, yo));
 
-            if (alivesCells.length < 2 || alivesCells.length > 3) {
-              shouldDie.push(cell);
-            }
-
-            deadCoordinates.forEach(([xd, yd]) => {
-              if (getAround(xd, yd).filter((c) => !!c).length === 3) {
-                shouldPopAt.push([xd, yd]);
-              }
-            });
-          }
-        });
+      if (alivesCells.length < 2 || alivesCells.length > 3) {
+        shouldDie.push(cell);
       }
+
+      deadCoordinates.forEach(([xd, yd]) => {
+        if (getAround(xd, yd).filter((c) => !!c).length === 3) {
+          shouldPopAt.push([xd, yd]);
+        }
+      });
     });
 
     shouldDie.forEach((cell) => unset(cell.x, cell.y));

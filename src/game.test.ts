@@ -8,9 +8,16 @@ describe("game", () => {
     });
 
     it("should fill a cell at 0:1", () => {
-      const { get, set } = createGame();
+      const { get, set, getAllCells } = createGame();
       expect(set(0, 1)).toEqual({ x: 0, y: 1 });
       expect(get(0, 1)).toEqual({ x: 0, y: 1 });
+    });
+
+    it("should fill a cell at negative coordiantes -1:-2", () => {
+      const { get, set, getAllCells } = createGame();
+      set(-1, -2);
+      expect(get(-1, -2)).toEqual({ x: -1, y: -2 });
+      expect(getAllCells()).toEqual([{ x: -1, y: -2 }]);
     });
 
     it("should clear a cell at 0:1", () => {
