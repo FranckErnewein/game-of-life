@@ -5,9 +5,20 @@ export interface CellInterface {
 
 type Column = (CellInterface | undefined)[];
 type Matrix = Column[];
+type Coordinate = [number, number];
 
-export default function useGame() {
+export default function createGame() {
   const matrix: Matrix = [];
+  const aroundOffset: Coordinate[] = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+  ];
 
   function get(x: number, y: number): CellInterface | undefined {
     if (!matrix[x]) {
@@ -31,39 +42,53 @@ export default function useGame() {
     }
   }
 
-  function getAround(x: number, y: number): CellInterface[] {
-    return [
-      [-1, -1],
-      [-1, 0],
-      [-1, 1],
-      [0, -1],
-      [0, 1],
-      [1, -1],
-      [1, 0],
-      [1, 1],
-    ].reduce((memo, [offsetX, offsetY]) => {
-      const cell = get(x + offsetX, y + offsetY);
-      if (cell) {
-        memo.push(cell);
+  function getAround(x: number, y: number): (CellInterface | undefined)[] {
+    return aroundOffset.map(([offsetX, offsetY]) =>
+      get(x + offsetX, y + offsetY)
+    );
+  }
+
+  function getAllCells(): CellInterface[] {
+    const all: CellInterface[] = [];
+    matrix.forEach((column: Column) => {
+      if (column) {
+        column.forEach((cell) => {
+          if (cell) all.push(cell);
+        });
       }
-      return memo;
-    }, [] as CellInterface[]);
+    });
+    return all;
   }
 
   function tick(): void {
-    matrix.forEach((column, y) => {
+    const shouldPopAt: Coordinate[] = [];
+    const shouldDie = [] as CellInterface[];
+    matrix.forEach((column, x) => {
       if (column) {
-        column.forEach((cell, x) => {
+        column.forEach((cell, y) => {
           if (cell) {
-            const arounds = getAround(x, y);
-            if (arounds.length < 2 || arounds.length > 3) {
-              unset(x, y);
+            const alivesCells = getAround(x, y).filter((c) => !!c);
+            const deadCoordinates = aroundOffset.filter(
+              ([offsetX, offsetY]) => !get(x + offsetX, y + offsetY)
+            );
+
+            if (alivesCells.length < 2 || alivesCells.length > 3) {
+              shouldDie.push(cell);
             }
+
+            deadCoordinates.forEach(([xd, yd]) => {
+              if (getAround(xd, yd).filter((c) => !!c).length === 3) {
+                shouldPopAt.push([xd, yd]);
+              }
+            });
           }
         });
       }
     });
+
+    shouldDie.forEach((cell) => unset(cell.x, cell.y));
+    shouldPopAt.forEach(([x, y]: Coordinate) => set(x, y));
   }
 
-  return { tick, get, set, unset, getAround };
+  return { tick, get, set, unset, getAround, getAllCells };
 }

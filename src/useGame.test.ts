@@ -1,61 +1,72 @@
-import useGame from "./useGame";
+import createGame from "./useGame";
 
 describe("useGame", () => {
   describe("basics utils", () => {
     it("should init the game without cell", () => {
-      const { get } = useGame();
+      const { get } = createGame();
       expect(get(0, 0)).toBe(undefined);
     });
 
     it("should fill a cell at 0:1", () => {
-      const { get, set } = useGame();
+      const { get, set } = createGame();
       expect(set(0, 1)).toEqual({ x: 0, y: 1 });
       expect(get(0, 1)).toEqual({ x: 0, y: 1 });
     });
 
     it("should clear a cell at 0:1", () => {
-      const { get, set, unset } = useGame();
+      const { get, set, unset } = createGame();
       set(0, 1);
       expect(get(0, 1)).toEqual({ x: 0, y: 1 });
       unset(0, 1);
       expect(get(0, 1)).toEqual(undefined);
     });
-  });
 
-  describe("utils", () => {
-    it("should get nothing because game is empty", () => {
-      const { getAround } = useGame();
-      expect(getAround(0, 0)).toEqual([]);
-    });
-
-    it("should get all cell around", () => {
-      const { getAround, set } = useGame();
-      set(0, 0);
-      set(-1, -1);
-      set(-1, 0);
-      set(-1, 1);
-      set(0, -1);
+    it("should return all cells collections", () => {
+      const { set, getAllCells } = createGame();
+      expect(getAllCells().length).toEqual(0);
       set(0, 1);
-      set(1, -1);
-      set(1, 0);
+      expect(getAllCells().length).toEqual(1);
       set(1, 1);
-      expect(getAround(0, 0).length).toEqual(8);
-    });
-
-    it("should get no cell because it is too far", () => {
-      const { getAround, set } = useGame();
-      set(0, 0);
-      set(0, 2);
-      expect(getAround(0, 0)).toEqual([]);
+      expect(getAllCells().length).toEqual(2);
     });
   });
 
   describe("rules", () => {
     it("should die because cell is alone", () => {
-      const { get, set, tick } = useGame();
+      const { get, set, tick } = createGame();
       set(0, 0);
       tick();
       expect(get(0, 0)).toEqual(undefined);
+    });
+
+    it("should die because only one cell around", () => {
+      const { get, set, tick } = createGame();
+      set(0, 0);
+      set(0, 1);
+      tick();
+      expect(get(0, 0)).toEqual(undefined);
+      expect(get(0, 1)).toEqual(undefined);
+    });
+
+    it("3 cells should create a new one", () => {
+      const { get, set, tick } = createGame();
+      set(0, 0);
+      set(0, 1);
+      set(1, 0);
+      tick();
+      expect(get(1, 1)).toEqual({ x: 1, y: 1 });
+    });
+
+    it("should stay in stable state (square 2x2)", () => {
+      const { set, tick, getAllCells } = createGame();
+      set(0, 0);
+      set(0, 1);
+      set(1, 0);
+      set(1, 1);
+      tick();
+      expect(getAllCells().length).toBe(4);
+      tick();
+      expect(getAllCells().length).toBe(4);
     });
   });
 });
