@@ -4,9 +4,10 @@ export interface CellInterface {
 }
 
 type Column = (CellInterface | undefined)[];
+type Matrix = Column[];
 
 export default function useGame() {
-  const matrix: Column[] = [];
+  const matrix: Matrix = [];
 
   function get(x: number, y: number): CellInterface | undefined {
     if (!matrix[x]) {
@@ -30,7 +31,39 @@ export default function useGame() {
     }
   }
 
-  function tick(): void {}
+  function getAround(x: number, y: number): CellInterface[] {
+    return [
+      [-1, -1],
+      [-1, 0],
+      [-1, 1],
+      [0, -1],
+      [0, 1],
+      [1, -1],
+      [1, 0],
+      [1, 1],
+    ].reduce((memo, [offsetX, offsetY]) => {
+      const cell = get(x + offsetX, y + offsetY);
+      if (cell) {
+        memo.push(cell);
+      }
+      return memo;
+    }, [] as CellInterface[]);
+  }
 
-  return { tick, get, set, unset };
+  function tick(): void {
+    matrix.forEach((column, y) => {
+      if (column) {
+        column.forEach((cell, x) => {
+          if (cell) {
+            const arounds = getAround(x, y);
+            if (arounds.length < 2 || arounds.length > 3) {
+              unset(x, y);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  return { tick, get, set, unset, getAround };
 }
