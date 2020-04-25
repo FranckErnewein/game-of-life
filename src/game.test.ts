@@ -3,12 +3,12 @@ import createGame from "./game";
 describe("game", () => {
   describe("basics utils", () => {
     it("should init the game without cell", () => {
-      const { get } = createGame();
-      expect(get(0, 0)).toBe(undefined);
+      const { getAllCells } = createGame();
+      expect(getAllCells()).toBe([]);
     });
 
     it("should fill a cell at 0:1", () => {
-      const { get, set, getAllCells } = createGame();
+      const { get, set } = createGame();
       expect(set(0, 1)).toEqual({ x: 0, y: 1 });
       expect(get(0, 1)).toEqual({ x: 0, y: 1 });
     });
