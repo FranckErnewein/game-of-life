@@ -1,6 +1,6 @@
-import createGame from "./useGame";
+import { createGame } from "./game";
 
-describe("useGame", () => {
+describe("game", () => {
   describe("basics utils", () => {
     it("should init the game without cell", () => {
       const { get } = createGame();

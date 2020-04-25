@@ -1,4 +1,4 @@
-export interface CellInterface {
+interface CellInterface {
   x: number;
   y: number;
 }
@@ -7,7 +7,7 @@ type Column = (CellInterface | undefined)[];
 type Matrix = Column[];
 type Coordinate = [number, number];
 
-export default function createGame() {
+export function createGame() {
   const matrix: Matrix = [];
   const aroundOffset: Coordinate[] = [
     [-1, -1],
