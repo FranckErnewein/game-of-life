@@ -12,10 +12,16 @@ function App() {
     setCells(game.getAllCells());
   };
 
+  const onNext = (e: MouseEvent<HTMLButtonElement>) => {
+    game.tick();
+    setCells(game.getAllCells());
+  };
+
   return (
     <div>
       <button>Play</button>
       <button>Pause</button>
+      <button onClick={onNext}>next</button>
       <PlayGround
         width={10}
         height={10}
