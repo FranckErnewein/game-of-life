@@ -68,9 +68,9 @@ export default function createGame() {
         column.forEach((cell, y) => {
           if (cell) {
             const alivesCells = getAround(x, y).filter((c) => !!c);
-            const deadCoordinates = aroundOffset.filter(
-              ([offsetX, offsetY]) => !get(x + offsetX, y + offsetY)
-            );
+            const deadCoordinates = aroundOffset
+              .map(([offsetX, offsetY]) => [x + offsetX, y + offsetY])
+              .filter(([xo, yo]) => !get(xo, yo));
 
             if (alivesCells.length < 2 || alivesCells.length > 3) {
               shouldDie.push(cell);

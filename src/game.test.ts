@@ -57,6 +57,15 @@ describe("game", () => {
       expect(get(1, 1)).toEqual({ x: 1, y: 1 });
     });
 
+    it("3 cells should create a new one (with offset)", () => {
+      const { get, set, tick } = createGame();
+      set(3, 3);
+      set(3, 4);
+      set(4, 3);
+      tick();
+      expect(get(4, 4)).toEqual({ x: 4, y: 4 });
+    });
+
     it("should stay in stable state (square 2x2)", () => {
       const { set, tick, getAllCells } = createGame();
       set(0, 0);

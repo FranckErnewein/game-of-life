@@ -1,4 +1,4 @@
-import React, { useState, MouseEvent } from "react";
+import React, { useState, useEffect, MouseEvent } from "react";
 import createGame, { CellInterface } from "./game";
 import PlayGround from "./components/PlayGround";
 
@@ -6,6 +6,7 @@ const game = createGame();
 
 function App() {
   const [cells, setCells] = useState<CellInterface[]>(game.getAllCells());
+  const [play, setPlay] = useState<boolean>(false);
 
   const onClick = (x: number, y: number) => {
     game.set(x, y);
@@ -17,15 +18,40 @@ function App() {
     setCells(game.getAllCells());
   };
 
+  const onPlay = (e: MouseEvent<HTMLButtonElement>) => {
+    setPlay(true);
+  };
+  const onPlause = (e: MouseEvent<HTMLButtonElement>) => {
+    setPlay(false);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (play) {
+        game.tick();
+        const c = game.getAllCells();
+        setCells(c);
+        if (c.length === 0) {
+          setPlay(false);
+        }
+      }
+    }, 1000 / 24);
+    return () => clearInterval(interval);
+  });
+
   return (
     <div>
-      <button>Play</button>
-      <button>Pause</button>
+      <button onClick={onPlay} disabled={play}>
+        Play
+      </button>
+      <button onClick={onPlause} disabled={!play}>
+        Pause
+      </button>
       <button onClick={onNext}>next</button>
       <PlayGround
-        width={10}
-        height={10}
-        cellSize={25}
+        width={100}
+        height={100}
+        cellSize={5}
         onCellClick={onClick}
         cells={cells}
       />
