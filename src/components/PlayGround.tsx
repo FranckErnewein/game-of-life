@@ -1,4 +1,9 @@
-import React, { useState, FunctionComponent, MouseEvent } from "react";
+import React, {
+  useState,
+  FunctionComponent,
+  MouseEvent,
+  TouchEvent,
+} from "react";
 import styled from "styled-components";
 import { CellInterface } from "../game";
 
@@ -9,7 +14,7 @@ interface Props {
 }
 
 const Container = styled.div`
-  position: absolute;
+  position: fixed;
   overflow: hidden;
   top: 0;
   left: 0;
@@ -62,7 +67,8 @@ const PlayGround: FunctionComponent<Props> = ({ cellSize, cells, onCell }) => {
   const [isCaputring, allowCapture] = useState<boolean>(false);
   const [lastX, setLastX] = useState<number>(0);
   const [lastY, setLastY] = useState<number>(0);
-  const onMouseEvent = (e: MouseEvent<HTMLDivElement>) => {
+  const onMouseMoveEvent = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
     const x = Math.floor(e.nativeEvent.offsetX / cellSize);
     const y = Math.floor(e.nativeEvent.offsetY / cellSize);
     if (isCaputring && (x !== lastX || y !== lastY)) {
@@ -70,21 +76,64 @@ const PlayGround: FunctionComponent<Props> = ({ cellSize, cells, onCell }) => {
       setLastX(x);
       setLastY(y);
     }
+    return false;
   };
-  return (
-    <Container
-      onMouseMove={onMouseEvent}
-      onMouseDown={(e: MouseEvent<HTMLDivElement>) => {
-        allowCapture(true);
-        const x = Math.floor(e.nativeEvent.offsetX / cellSize);
-        const y = Math.floor(e.nativeEvent.offsetY / cellSize);
+
+  const onMouseStartEvent = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    allowCapture(true);
+    const x = Math.floor(e.nativeEvent.offsetX / cellSize);
+    const y = Math.floor(e.nativeEvent.offsetY / cellSize);
+    onCell(x, y);
+    setLastX(x);
+    setLastY(y);
+    onMouseMoveEvent(e);
+    return false;
+  };
+
+  const onTouchMoveEvent = (e: TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const { touches } = e;
+    if (touches && touches[0]) {
+      const x = Math.floor(touches[0].clientX / cellSize);
+      const y = Math.floor(touches[0].clientY / cellSize);
+      if (isCaputring && (x !== lastX || y !== lastY)) {
         onCell(x, y);
         setLastX(x);
         setLastY(y);
-        onMouseEvent(e);
-      }}
-      onMouseLeave={() => allowCapture(false)}
-      onMouseUp={() => allowCapture(false)}
+      }
+    }
+    return false;
+  };
+
+  const onTouchStartEvent = (e: TouchEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    allowCapture(true);
+    const { touches } = e;
+    if (touches && touches[0]) {
+      const x = Math.floor(touches[0].clientX / cellSize);
+      const y = Math.floor(touches[0].clientY / cellSize);
+      onCell(x, y);
+      setLastX(x);
+      setLastY(y);
+      onTouchMoveEvent(e);
+    }
+    return false;
+  };
+
+  const stopCapture = () => allowCapture(false);
+  return (
+    <Container
+      onMouseDown={onMouseStartEvent}
+      onMouseMove={onMouseMoveEvent}
+      onMouseLeave={stopCapture}
+      onMouseUp={stopCapture}
+      onTouchStart={onTouchStartEvent}
+      onTouchMove={onTouchMoveEvent}
+      onTouchCancel={stopCapture}
+      onTouchEnd={stopCapture}
     >
       {cells.length === 0 && (
         <Helper>
