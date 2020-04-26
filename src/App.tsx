@@ -36,7 +36,7 @@ const game = createGame();
 
 function App() {
   const [cells, setCells] = useState<CellInterface[]>(game.getAllCells());
-  const [fps, setFPS] = useState<number>(18);
+  const [fps, setFPS] = useState<number>(8);
   const [play, setPlay] = useState<boolean>(false);
 
   const toggleCell = (x: number, y: number) => {
@@ -85,17 +85,15 @@ function App() {
   return (
     <div>
       <Controls>
-        <label htmlFor="fps">
-          speed
-          <input
-            name="fps"
-            defaultValue={fps}
-            min={1}
-            type="range"
-            max={30}
-            onChange={onSlide}
-          />
-        </label>
+        <input
+          title="speed"
+          name="fps"
+          defaultValue={fps}
+          min={1}
+          type="range"
+          max={30}
+          onChange={onSlide}
+        />
         <Button onClick={onPlay} disabled={play}>
           play
         </Button>
@@ -110,6 +108,7 @@ function App() {
         </Button>
         <a
           target="_blank"
+          rel="noopener noreferrer"
           href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life"
         >
           info
