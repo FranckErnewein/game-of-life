@@ -1,5 +1,4 @@
 import React from "react";
-import Email from "../Email";
 import Title from "./Title";
 import Section from "./Section";
 

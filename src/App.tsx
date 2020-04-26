@@ -1,7 +1,8 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import createGame, { CellInterface } from "./game";
 import PlayGround from "./components/PlayGround";
+import InputRange from "./components/InputRange";
 import Infos from "./components/panel/Infos";
 import About from "./components/panel/About";
 import Title from "./components/panel/Title";
@@ -37,7 +38,8 @@ const Toggler = styled.div<{ open?: boolean }>`
   background: #fff;
   height: ${(p) => (p.open ? panelHeight : 0)}px;
   overflow: hidden;
-  transition: height 250ms;
+  transition: height 150ms;
+  border-top: 1px solid #ddd;
 `;
 
 const More = styled.nav`
@@ -94,18 +96,6 @@ function App() {
     setCells(game.getAllCells());
   };
 
-  const onSlide = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target) {
-      setFPS(parseInt(e.target.value, 10));
-    }
-  };
-  const onSize = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target) {
-      console.log(e.target.value);
-      setSize(parseInt(e.target.value, 10));
-    }
-  };
-
   useEffect(() => {
     const interval = setInterval(() => {
       if (play) {
@@ -141,23 +131,19 @@ function App() {
           <More>
             <Section>
               <Title>Settings</Title>
-              <input
-                title="speed"
-                name="fps"
-                defaultValue={fps}
+              <InputRange
+                label="Speed"
+                value={fps}
+                onChange={setFPS}
                 min={1}
-                type="range"
                 max={30}
-                onChange={onSlide}
               />
-              <input
-                title="size"
-                name="size"
-                defaultValue={size}
+              <InputRange
+                label="Zoom"
+                value={size}
+                onChange={setSize}
                 min={1}
-                type="range"
                 max={10}
-                onChange={onSize}
               />
             </Section>
             <Infos />
