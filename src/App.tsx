@@ -7,6 +7,7 @@ import Infos from "./components/panel/Infos";
 import About from "./components/panel/About";
 import Title from "./components/panel/Title";
 import Section from "./components/panel/Section";
+import { device } from "./components/mediaqueries";
 
 const spacing = 10;
 const panelHeight = 150;
@@ -31,7 +32,7 @@ const Controls = styled.nav`
 const TogglerHandler = styled.div`
   position: absolute;
   right: ${spacing}px;
-  bottom: ${spacing}px;
+  bottom: ${spacing + 1}px;
 `;
 
 const Toggler = styled.div<{ open?: boolean }>`
@@ -40,6 +41,9 @@ const Toggler = styled.div<{ open?: boolean }>`
   overflow: hidden;
   transition: height 150ms;
   border-top: 1px solid #ddd;
+  @media ${device.mobileL} {
+    height: ${(p) => (p.open ? panelHeight * 3 : 0)}px;
+  }
 `;
 
 const More = styled.nav`
@@ -49,12 +53,17 @@ const More = styled.nav`
   background: #fff;
   display: flex;
   justify-content: space-between;
+  @media ${device.mobileL} {
+    height: ${panelHeight * 3 - spacing * 2}px;
+    display: block;
+  }
 `;
 
 const Button = styled.button`
   border: 1px solid #ccc;
   font-family: monospace;
-  margin: 2px;
+  box-sizing: border-box;
+  margin: 0 2px;
   padding: 10px 16px;
   cursor: pointer;
   outline: 0 none;
