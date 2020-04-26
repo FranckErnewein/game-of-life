@@ -29,15 +29,20 @@ const Helper = styled.div`
   text-transform: uppercase;
   pointer-events: none;
   color: #000;
+  h1,
   h2,
   p {
     font-family: sans-serif;
+    font-weight: normal;
     margin: 0;
     padding: 0;
   }
+  h1 {
+    font-size: 30px;
+    line-height: 30px;
+  }
   h2 {
     font-size: 60px;
-    font-weight: normal;
     line-height: 70px;
   }
   p {
@@ -82,6 +87,7 @@ const PlayGround: FunctionComponent<Props> = ({ cellSize, cells, onCell }) => {
     >
       {cells.length === 0 && (
         <Helper>
+          <h1>The game of life</h1>
           <h2>Draw here</h2>
           <p>then play</p>
         </Helper>
