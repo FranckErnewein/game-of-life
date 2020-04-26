@@ -68,9 +68,9 @@ const game = createGame();
 
 function App() {
   const [cells, setCells] = useState<CellInterface[]>(game.getAllCells());
-  const [fps, setFPS] = useState<number>(8);
+  const [fps, setFPS] = useState<number>(12);
   const [size, setSize] = useState<number>(5);
-  const [play, setPlay] = useState<boolean>(false);
+  const [isPlaying, setPlay] = useState<boolean>(false);
   const [panelOpened, openPanel] = useState<boolean>(false);
 
   const toggleCell = (x: number, y: number) => {
@@ -80,25 +80,21 @@ function App() {
     setCells(game.getAllCells());
   };
 
-  const onNext = () => {
+  const next = () => {
     game.tick();
     setCells(game.getAllCells());
   };
 
-  const onPlay = () => {
-    setPlay(true);
-  };
-  const onPlause = () => {
-    setPlay(false);
-  };
-  const onClear = () => {
+  const play = () => setPlay(true);
+  const pause = () => setPlay(false);
+  const clear = () => {
     game.getAllCells().forEach((cell) => game.unset(cell.x, cell.y));
     setCells(game.getAllCells());
   };
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (play) {
+      if (isPlaying) {
         game.tick();
         const c = game.getAllCells();
         setCells(c);
@@ -108,22 +104,22 @@ function App() {
       }
     }, 1000 / fps);
     return () => clearInterval(interval);
-  }, [fps, play]);
+  }, [fps, isPlaying]);
 
   return (
     <div>
       <Panel>
         <Controls>
-          <Button onClick={onPlay} disabled={play}>
+          <Button onClick={play} disabled={isPlaying}>
             play
           </Button>
-          <Button onClick={onPlause} disabled={!play}>
+          <Button onClick={pause} disabled={!isPlaying}>
             pause
           </Button>
-          <Button onClick={onNext} disabled={play}>
+          <Button onClick={next} disabled={isPlaying}>
             next
           </Button>
-          <Button onClick={onClear} disabled={play}>
+          <Button onClick={clear} disabled={isPlaying}>
             clear
           </Button>
         </Controls>

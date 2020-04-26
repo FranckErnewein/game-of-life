@@ -17,6 +17,35 @@ const Container = styled.div`
   background: #eee;
 `;
 
+const Helper = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin: -50px -300px;
+  text-align: center;
+  width: 600px;
+  height: 100px;
+  opacity: 0.1;
+  text-transform: uppercase;
+  pointer-events: none;
+  color: #000;
+  h2,
+  p {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  h2 {
+    font-size: 60px;
+    font-weight: normal;
+    line-height: 70px;
+  }
+  p {
+    font-size: 30px;
+    line-height: 30px;
+  }
+`;
+
 const Cell = styled.div`
   position: absolute;
   pointer-events: none;
@@ -39,7 +68,7 @@ const PlayGround: FunctionComponent<Props> = ({ cellSize, cells, onCell }) => {
   return (
     <Container
       onMouseMove={onMouseEvent}
-      onMouseDown={(e) => {
+      onMouseDown={(e: MouseEvent<HTMLDivElement>) => {
         allowCapture(true);
         const x = Math.floor(e.nativeEvent.offsetX / cellSize);
         const y = Math.floor(e.nativeEvent.offsetY / cellSize);
@@ -51,6 +80,12 @@ const PlayGround: FunctionComponent<Props> = ({ cellSize, cells, onCell }) => {
       onMouseLeave={() => allowCapture(false)}
       onMouseUp={() => allowCapture(false)}
     >
+      {cells.length === 0 && (
+        <Helper>
+          <h2>Draw here</h2>
+          <p>then play</p>
+        </Helper>
+      )}
       {cells.map((cell) => {
         return (
           <Cell
