@@ -1,15 +1,24 @@
 import React, { FunctionComponent, ChangeEvent } from "react";
 import styled from "styled-components";
 
-const Label = styled.label`
+const Content = styled.div`
   display: flex;
   color: #777;
   font-size: 11px;
   text-transform: uppercase;
   padding: 10px 0 5px 0;
+  label,
+  div {
+    display: block;
+    line-height: 15px;
+    height: 15px;
+    width: 45px;
+  }
+  div {
+    text-align: right;
+  }
   span {
     display: inline-block;
-    width: 45px;
   }
 `;
 
@@ -34,8 +43,8 @@ const InputRange: FunctionComponent<Props> = ({
     }
   };
   return (
-    <Label>
-      <span>{label}:</span>
+    <Content>
+      <label>{label}:</label>
       <input
         title={label}
         name={label.toLowerCase()}
@@ -45,8 +54,10 @@ const InputRange: FunctionComponent<Props> = ({
         max={max}
         onChange={onInputChange}
       />
-      {value}/{max}
-    </Label>
+      <div>
+        {value}/{max}
+      </div>
+    </Content>
   );
 };
 
